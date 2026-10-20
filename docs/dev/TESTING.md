@@ -29,6 +29,10 @@ Current cases:
 | `abi_surface` | references every runtime export through a real prototype; spot-checks forwarding of arguments and results |
 | `multi` | `main` importing from `subsdk0`, initialiser order across modules |
 
+AnyPS5 forbids tests that only check that a symbol is exported, because a missing export fails at start-up there. anyswitch binds missing functions to traps that fire only when called, so a mistyped mangled name would surface late, in a title; `abi_surface` exists to catch that at build time.
+
+Each case must finish within 30 s on CI runners, under qemu-user included (AGENTS.md E8). The runner prints each case's time and warns above 30 s.
+
 After a full run, the runner compares the runtime's exports (`anyswitch-relink provided`) with the imports of every corpus module. `tools/dev/test.sh` passes `--require-coverage`, so an export that no case references fails the run (AGENTS.md rule E4). When you add an export, reference it from `abi_surface.cpp` at least, and exercise its behaviour in a case of its own when it has any.
 
 ### Adding a case

@@ -41,6 +41,10 @@ jobs:
           label bug           d73a4a 'Something in anyswitch is wrong'
           label 'good first issue' 7057ff 'Small and well-scoped; a good start'
           label legal         000000 'Questions about the input contract or provenance rules'
-          # pull request state
-          label 'needs rebase' b60205 'Conflicts with main'
-          label stale         ededed 'Conflicting with main and no activity for 14 days'
+          # pull request state (CONTRIBUTING.md, "Pull requests")
+          label 'needs rebase'   b60205 'Conflicts with main'
+          label stale            ededed 'Conflicting with main and no activity for 14 days'
+          label 'fixes issue'    d73a4a 'Closes an issue on merge (Fixes: #N)'
+          label 'unblocks title' 0e8a16 'Names a title on its Unblocks line; reviewed first'
+          label perf             fef2c0 'Performance change; needs before and after numbers'
+          label 'open PR limit'  d93f0b 'Closed over the open pull request limit'

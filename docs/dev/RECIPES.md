@@ -43,6 +43,14 @@ Step-by-step instructions for the tasks that come up most. Each ends with the sa
 2. Update both sides and the "Relinker/runtime contract" section of ARCHITECTURE.md.
 3. `tools/check_conventions.py --base origin/main` fails if the header changed without a version bump.
 
+## Open a pull request
+
+1. Branch from current `main`: `git switch -c feat/nn-os-events origin/main`.
+2. Make the change, with tests and debt-file updates.
+3. `tools/dev/test.sh` and `python3 -I tools/check_conventions.py --base origin/main`.
+4. `python3 -I tools/pr_overlap.py --branch feat/nn-os-events` (needs `gh auth login`); resolve overlaps with the other authors.
+5. Push and open the pull request with a Conventional Commits title, filling every line of the template. The Conventions check fails on a missing field or an unticked box.
+
 ## Complete a roadmap milestone
 
 1. Change the milestone's `status` in `docs/roadmap.json` (`done`, `in_progress`, `planned`, `blocked`) in the pull request that does the work.

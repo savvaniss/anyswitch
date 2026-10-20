@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: MIT
+# Open pull request limit per author (CONTRIBUTING.md): 1 open pull request
+# until one is merged, 20 once at least one is merged, no limit from 20 merged.
+# Collaborators with write access and bots are exempt. A pull request over the
+# limit is closed with an explanation; a maintainer reopening it lifts the limit.
+name: PR intake
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions: {}
+
+concurrency:
+  group: pr-intake-${{ github.event.pull_request.number }}
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const label = 'open PR limit';
+            if (pr.base.ref !== 'main' || pr.user.type === 'Bot') return;
+
+            async function canWrite(username) {
+              try {
+                const { data } = await github.rest.repos.getCollaboratorPermissionLevel({ owner, repo, username });
+                return ['admin', 'maintain', 'write'].includes(data.permission);
+              } catch (error) {
+                return false;
+              }
+            }
+
+            if (context.payload.action === 'reopened' && await canWrite(context.payload.sender.login)) {
+              try {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: pr.number, name: label });
+              } catch (error) {
+                if (error.status !== 404) core.warning(`could not remove the label: ${error.message}`);
+              }
+              return;
+            }
+            if (await canWrite(pr.user.login)) return;
+
+            const author = pr.user.login;
+            const closed = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'closed', base: 'main', per_page: 100 });
+            const merged = closed.filter(p => p.user && p.user.login === author && p.merged_at).length;
+            if (merged >= 20) return;
+            const limit = merged === 0 ? 1 : 20;
+            const open = (await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open', per_page: 100 }))
+              .filter(p => p.user && p.user.login === author);
+            if (open.length <= limit) return;
+
+            const others = open.filter(p => p.number !== pr.number).map(p => `#${p.number}`).join(', ');
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: pr.number,
+              body: [
+                `Thanks for the contribution. Authors can have ${limit} open pull request${limit === 1 ? '' : 's'} ` +
+                `with ${merged} merged so far (see CONTRIBUTING.md, "Pull requests"); you already have ${others} open.`,
+                '',
+                'This one is closed for now. Reopen it once another of yours is merged or closed.',
+              ].join('\n'),
+            });
+            await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: [label] });
+            await github.rest.pulls.update({ owner, repo, pull_number: pr.number, state: 'closed' });

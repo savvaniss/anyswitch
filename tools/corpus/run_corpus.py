@@ -25,6 +25,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -32,6 +33,8 @@ import nxo  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 CORPUS = ROOT / "tests" / "corpus"
+TIME_BUDGET = 30   # seconds per case on CI runners, qemu-user included (CONTRIBUTING.md)
+HARD_TIMEOUT = 120
 GUEST_CFLAGS = [
     "-target", "aarch64-freestanding-none", "-O2", "-fPIC", "-ffreestanding", "-fno-exceptions", "-fno-rtti",
     "-fno-stack-protector", "-mno-outline-atomics", "-fno-sized-deallocation", "-std=c++20",
@@ -133,10 +136,21 @@ def main() -> int:
         cmd = [str(dest / "main"), *case.get("args", [])]
         if not native:
             cmd = [args.qemu, "-L", args.sysroot, *cmd]
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        started = time.monotonic()
+        try:
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=HARD_TIMEOUT)
+        except subprocess.TimeoutExpired as e:
+            proc = subprocess.CompletedProcess(cmd, -1, e.stdout or "", e.stderr or "")
+        elapsed = time.monotonic() - started
         problems = check(case, proc)
+        if proc.returncode == -1:
+            problems.append(f"killed after {HARD_TIMEOUT} s")
         status = "PASS" if not problems else "FAIL"
-        print(f"{status} {name}")
+        print(f"{status} {name} ({elapsed:.1f} s)")
+        if elapsed > TIME_BUDGET:
+            note = f"corpus case {name} took {elapsed:.0f} s; cases must finish in {TIME_BUDGET} s (CONTRIBUTING.md)"
+            print(f"::warning title=slow corpus case::{note}" if os.environ.get("GITHUB_ACTIONS") == "true"
+                  else f"  warning: {note}")
         if problems or args.verbose:
             for p in problems:
                 print(f"  {p}")

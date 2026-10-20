@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: MIT
-# Applies area labels from .github/labeler.yml. actions/labeler reads only the
-# list of changed files and never runs pull request code.
+# Applies area labels from .github/labeler.yml, and labels taken from the
+# pull request template: "fixes issue" (Fixes: #N), "unblocks title"
+# (Unblocks: not none) and "perf" (perf: titles). Neither step runs pull
+# request code; both read only metadata.
 name: PR labels
 
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened]
+    types: [opened, edited, synchronize, reopened]
 
 permissions: {}
 
@@ -15,8 +17,33 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
+      issues: write
       pull-requests: write
     steps:
       - uses: actions/labeler@v7
         with:
-          sync-labels: true
+          sync-labels: false
+      - name: Labels from the title and template
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const body = (pr.body || '').replace(/<!--[\s\S]*?-->/g, '');
+            const field = name => {
+              const m = body.match(new RegExp(`^\\s*- \\[[xX ]\\] ${name}:(.*)$`, 'mi'));
+              return m ? m[1].trim() : '';
+            };
+            const wanted = {
+              'fixes issue': /#\d+/.test(field('Fixes')),
+              'unblocks title': field('Unblocks') !== '' && !/^none$/i.test(field('Unblocks')),
+              'perf': /^perf(\(|!|:)/.test(pr.title),
+            };
+            const current = pr.labels.map(l => l.name);
+            for (const [name, on] of Object.entries(wanted)) {
+              if (on && !current.includes(name)) {
+                await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: [name] });
+              } else if (!on && current.includes(name)) {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: pr.number, name });
+              }
+            }

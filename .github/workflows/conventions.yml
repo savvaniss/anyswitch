@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: MIT
-# Checks pull requests against AGENTS.md with the checker from the base
-# branch, so a pull request cannot weaken the checks it is judged by. The
-# pull request's code is fetched as git objects and never executed.
+# Checks pull requests against AGENTS.md and CONTRIBUTING.md with the checker
+# from the base branch, so a pull request cannot weaken the checks it is
+# judged by. The pull request's commits are fetched as git objects and never
+# executed; its title and body reach the checker as environment variables.
 name: Conventions
 
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read
@@ -33,4 +34,7 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: python3 -I tools/check_conventions.py --base "$BASE_SHA" --head "$HEAD_SHA"
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: python3 -I tools/check_conventions.py --base "$BASE_SHA" --head "$HEAD_SHA" --pr
