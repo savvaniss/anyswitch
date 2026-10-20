@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Reviewers requested automatically for pull requests.
+*                         @savvaniss
+/core/abi/                @savvaniss
+/AGENTS.md                @savvaniss
+/.github/                 @savvaniss

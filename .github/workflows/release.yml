@@ -1,0 +1,123 @@
+# SPDX-License-Identifier: MIT
+# Tag vX.Y.Z (or vX.Y.Z-rc.N for a pre-release) to publish:
+#   anyswitch-relink-<tag>-<platform>.{tar.gz,zip}   relinker for linux-x86_64, linux-aarch64, windows-x86_64, macos-arm64
+#   anyswitch-runtime-<tag>-linux-aarch64.tar.gz      libnxrt.so
+#   SHA256SUMS
+# Every artifact is built and tested here; releases contain no game data.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ github.ref_name }}
+
+jobs:
+  relinker:
+    name: Relinker (${{ matrix.platform }})
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - platform: linux-x86_64
+            runner: ubuntu-24.04
+            configure: -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc"
+          - platform: linux-aarch64
+            runner: ubuntu-24.04-arm
+            configure: -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc"
+          - platform: windows-x86_64
+            runner: windows-latest
+            configure: -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+          - platform: macos-arm64
+            runner: macos-latest
+            configure: -DCMAKE_OSX_DEPLOYMENT_TARGET=13.3
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DANYSWITCH_WERROR=ON ${{ matrix.configure }}
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Package
+        run: |
+          name="anyswitch-relink-$TAG-${{ matrix.platform }}"
+          mkdir -p "dist/$name"
+          if [ -f build/Release/anyswitch-relink.exe ]; then
+            cp build/Release/anyswitch-relink.exe "dist/$name/"
+          else
+            cp build/anyswitch-relink "dist/$name/"
+          fi
+          cp LICENSE README.md docs/user/USAGE.md "dist/$name/"
+          cd dist
+          if [ "${{ runner.os }}" = Windows ]; then
+            7z a -tzip "$name.zip" "$name" > /dev/null
+          else
+            tar -czf "$name.tar.gz" "$name"
+          fi
+          rm -rf "$name"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: relinker-${{ matrix.platform }}
+          path: dist/*
+
+  runtime:
+    name: Runtime (linux-aarch64)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: Fetch Zig
+        run: tools/bootstrap/fetch_toolchain.sh
+      - name: Build
+        run: tools/dev/build.sh
+      - name: Unit tests and corpus
+        run: tools/dev/test.sh
+      - name: Package
+        run: |
+          name="anyswitch-runtime-$TAG-linux-aarch64"
+          mkdir -p "dist/$name"
+          cp build/runtime/libnxrt.so LICENSE docs/user/USAGE.md "dist/$name/"
+          tar -C dist -czf "dist/$name.tar.gz" "$name"
+          rm -rf "dist/$name"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: runtime
+          path: dist/*
+
+  publish:
+    needs: [relinker, runtime]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums
+        run: cd dist && sha256sum -- * > SHA256SUMS && cat SHA256SUMS
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          flags=()
+          case "$TAG" in *-*) flags+=(--prerelease) ;; esac
+          gh release create "$TAG" dist/* --title "anyswitch $TAG" --generate-notes --verify-tag "${flags[@]}"

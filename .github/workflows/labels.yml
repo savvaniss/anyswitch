@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: MIT
+# Creates or updates the repository's labels. Edit the list here; it runs
+# when this file changes on main, or by hand.
+name: Labels
+
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/labels.yml]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Sync labels
+        run: |
+          label() { gh label create "$1" --color "$2" --description "$3" --force; }
+          # areas (applied to pull requests by .github/labeler.yml)
+          label relinker      5319e7 'core/: formats, patcher, ELF writer, CLI'
+          label runtime       1d76db 'runtime/src/rt: start-up, threads, SVCs, traps'
+          label nn_os         0e8a16 'runtime/src/nn_os'
+          label libc          fbca04 'runtime/src/libc'
+          label cxxabi        c5def5 'runtime/src/cxxabi'
+          label corpus        bfdadc 'tests/corpus: synthetic guest programs'
+          label site          d4c5f9 'site/ and tools/site: Pages and progress'
+          label build         bfd4f2 'CMake, toolchain bootstrap, dev scripts'
+          label docs          0075ca 'Documentation'
+          label ci            ededed '.github'
+          label abi           b60205 'core/abi/nxabi.h: relinker/runtime contract'
+          # kinds
+          label 'missing function' 0e8a16 'An SDK function titles need that the runtime lacks'
+          label bug           d73a4a 'Something in anyswitch is wrong'
+          label 'good first issue' 7057ff 'Small and well-scoped; a good start'
+          label legal         000000 'Questions about the input contract or provenance rules'
+          # pull request state
+          label 'needs rebase' b60205 'Conflicts with main'
+          label stale         ededed 'Conflicting with main and no activity for 14 days'

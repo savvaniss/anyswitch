@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: MIT
+# Builds and deploys https://<owner>.github.io/anyswitch/: home page, progress
+# page, badges and roadmap map (tools/site/build_site.py).
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pages.yml
+      - core/relinker/include/nx/relinker/patcher.hpp
+      - docs/**
+      - runtime/src/**
+      - site/**
+      - tests/corpus/cases.json
+      - tools/site/**
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/configure-pages@v6
+      - name: Build the site
+        run: python3 -I tools/site/build_site.py _site
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

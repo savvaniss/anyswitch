@@ -1,12 +1,18 @@
 # anyswitch
 
+[![ci](https://github.com/savvaniss/anyswitch/actions/workflows/ci.yml/badge.svg)](https://github.com/savvaniss/anyswitch/actions/workflows/ci.yml) [![SDK exports](https://savvaniss.github.io/anyswitch/badge-exports.svg)](https://savvaniss.github.io/anyswitch/progress.html#sdk) [![corpus](https://savvaniss.github.io/anyswitch/badge-corpus.svg)](https://savvaniss.github.io/anyswitch/progress.html#corpus) [![roadmap](https://savvaniss.github.io/anyswitch/badge-roadmap.svg)](https://savvaniss.github.io/anyswitch/progress.html#roadmap)
+
+[![roadmap map](https://savvaniss.github.io/anyswitch/progress.svg)](https://savvaniss.github.io/anyswitch/progress.html)
+
+Website and progress: [savvaniss.github.io/anyswitch](https://savvaniss.github.io/anyswitch/) · Title bring-up reports: [Discussions](https://github.com/savvaniss/anyswitch/discussions)
+
 Converts Switch executables you already have in plain form into native AArch64 Linux programs, with a native runtime in place of the title's SDK. No emulator: the original machine code runs in-process after a handful of instructions are patched. The approach mirrors what [AnyPS5](https://github.com/boykopovar/AnyPS5) does for PS5 titles; [docs/FEASIBILITY.md](docs/FEASIBILITY.md) explains how it maps onto the Switch.
 
 "anyswitch" is a working title.
 
 ## Status
 
-Early Phase 1 of [docs/PLAN.md](docs/PLAN.md). No commercial title runs yet.
+Early Phase 1 of [docs/PLAN.md](docs/PLAN.md). No commercial title runs yet. Milestones live in [docs/roadmap.json](docs/roadmap.json); the badges, the map above and the [progress page](https://savvaniss.github.io/anyswitch/progress.html) are generated from the repository on every push.
 
 | Piece | State |
 |---|---|
@@ -46,6 +52,12 @@ Start with [AGENTS.md](AGENTS.md). It is the rulebook for human contributors and
 - [docs/FEASIBILITY.md](docs/FEASIBILITY.md): what AnyPS5 is, how each of its enablers maps onto the Switch, prior art, risks
 - [docs/PLAN.md](docs/PLAN.md): decisions, phases, sizing, open questions
 - [docs/REUSE.md](docs/REUSE.md): every existing project that can help, with license and how we may use it
+
+## Community
+
+- [Discussions](https://github.com/savvaniss/anyswitch/discussions): one "Title bring-up" thread per title, without sharing any of its data
+- [Issues](https://github.com/savvaniss/anyswitch/issues): bugs and missing SDK functions
+- [SECURITY.md](SECURITY.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 ## License
 

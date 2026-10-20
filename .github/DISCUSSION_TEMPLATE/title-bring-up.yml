@@ -1,0 +1,81 @@
+# SPDX-License-Identifier: MIT
+# Template for the "Title bring-up" discussion category (slug: title-bring-up).
+title: "Title name"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One thread per title. Search this category first; if a thread exists, reply there with your run, also when your host differs.
+        Name the thread after the title's public name only, for example `Example Game`.
+
+        **Share only what this form asks for.** Never attach or paste executables, dumps, symbol or import lists, logs that contain game text, screenshots, or anything that says where files came from. Questions about obtaining games or keys are removed. See [AGENTS.md](https://github.com/savvaniss/anyswitch/blob/main/AGENTS.md).
+
+        Bugs in anyswitch itself and implementation work belong in issues and pull requests; link them here as blockers.
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Existing thread
+      options:
+        - label: I searched this category and no thread exists for this title.
+          required: true
+        - label: I am testing software I own, from an exefs folder I already had in plain form.
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version tested
+      description: The title's version as shown on the console or in its metadata.
+      placeholder: "1.0.2"
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: anyswitch commit or release
+      placeholder: output of `git rev-parse --short HEAD`, or the release tag
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Host
+      placeholder: "Raspberry Pi 5, Debian 13, 4 KiB pages / x86-64 WSL + qemu-user"
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Furthest stage reached
+      options:
+        - Conversion fails (relinker error)
+        - Loader refuses to start (unresolved data import)
+        - Stops at an unimplemented function or SVC (exit 86)
+        - Crashes (exit 87)
+        - Reaches nnMain
+        - First graphics call
+        - Title screen
+        - In game
+        - Playable start to finish
+    validations:
+      required: true
+  - type: textarea
+    id: audit
+    attributes:
+      label: Audit summary
+      description: Only the summary lines of `anyswitch-relink audit --registry libnxrt.so exefs/`, for example `main: 512 of 600 imports provided, 88 missing`. Not the list.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: stop
+    attributes:
+      label: Where it stops
+      description: The `[nxrt] fatal:` or `[nxrt] guest crash:` line, with the function name or `module+offset`.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: blockers
+    attributes:
+      label: Blockers
+      description: Links to issues or pull requests that this title is waiting on, if any.

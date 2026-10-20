@@ -1,0 +1,106 @@
+{
+  "_comment": "Milestones from docs/PLAN.md section 5. Status: done, in_progress, planned, blocked. Update the status in the pull request that completes a milestone; the progress page and badges are generated from this file (tools/site/progress.py).",
+  "phases": [
+    {
+      "id": "p0",
+      "title": "Phase 0: decisive experiments",
+      "milestones": [
+        {"id": "p0-census-tool", "title": "Privileged-instruction census tool", "status": "done"},
+        {"id": "p0-inventory-tool", "title": "Import inventory and audit tools", "status": "done"},
+        {"id": "p0-measure-instructions", "title": "Census of real titles (Q1, Q2)", "status": "planned"},
+        {"id": "p0-measure-imports", "title": "Import inventory of real titles (Q4, Q7)", "status": "planned"},
+        {"id": "p0-tls-study", "title": "TLS layout study (Q3)", "status": "planned"},
+        {"id": "p0-nvn-inventory", "title": "NVN entry-point inventory (Q5)", "status": "planned"},
+        {"id": "p0-shader-spike", "title": "Shader translator spike (Q6)", "status": "planned"}
+      ]
+    },
+    {
+      "id": "p1",
+      "title": "Phase 1: relinker and loader on AArch64 Linux",
+      "milestones": [
+        {"id": "p1-formats", "title": "NSO, NRO, NPDM and MOD0 parsing", "status": "done"},
+        {"id": "p1-elf-writer", "title": "ELF writer with symbol prefixing and rebasing", "status": "done"},
+        {"id": "p1-patcher", "title": "Privileged-instruction patching", "status": "done"},
+        {"id": "p1-traps", "title": "Named traps for missing imports", "status": "done"},
+        {"id": "p1-runtime-core", "title": "Runtime start-up, guest threads, SVC safety net", "status": "done"},
+        {"id": "p1-corpus", "title": "Synthetic conformance corpus in CI", "status": "done"},
+        {"id": "p1-libnx-homebrew", "title": "A libnx homebrew NRO runs", "status": "planned"},
+        {"id": "p1-retail-init", "title": "First retail main reaches SDK initialisation", "status": "planned"}
+      ]
+    },
+    {
+      "id": "p2",
+      "title": "Phase 2: native SDK core",
+      "milestones": [
+        {"id": "p2-os-sync", "title": "nn::os events, condition variables, semaphores", "status": "planned"},
+        {"id": "p2-fs", "title": "nn::fs: RomFS and save data", "status": "planned"},
+        {"id": "p2-hid", "title": "nn::hid on SDL3", "status": "planned"},
+        {"id": "p2-oe", "title": "nn::oe and applet messages", "status": "planned"},
+        {"id": "p2-system", "title": "Account, settings and time", "status": "planned"},
+        {"id": "p2-cxx", "title": "libc++ surface and C++ exceptions", "status": "planned"},
+        {"id": "p2-three-engines", "title": "Three engines reach their first graphics call", "status": "planned"}
+      ]
+    },
+    {
+      "id": "p3",
+      "title": "Phase 3: graphics, first frame, first playable",
+      "milestones": [
+        {"id": "p3-vk-passthrough", "title": "Vulkan-passthrough title playable", "status": "planned"},
+        {"id": "p3-nvn-core", "title": "NVN core on Vulkan", "status": "planned"},
+        {"id": "p3-untiler", "title": "Block-linear untiler", "status": "planned"},
+        {"id": "p3-shader-offline", "title": "Maxwell shaders through the offline translator", "status": "planned"},
+        {"id": "p3-shader-native", "title": "Native Maxwell to SPIR-V recompiler", "status": "planned"},
+        {"id": "p3-first-playable", "title": "First NVN title playable", "status": "planned"}
+      ]
+    },
+    {
+      "id": "p4",
+      "title": "Phase 4: audio, dynamic modules, breadth",
+      "milestones": [
+        {"id": "p4-audio", "title": "nn::audio renderer and output", "status": "planned"},
+        {"id": "p4-ro", "title": "Runtime NRO loading (nn::ro)", "status": "planned"},
+        {"id": "p4-fonts", "title": "Shared fonts", "status": "planned"},
+        {"id": "p4-ten-titles", "title": "Ten titles playable across three engines", "status": "planned"}
+      ]
+    },
+    {
+      "id": "p5",
+      "title": "Phase 5: more hosts",
+      "milestones": [
+        {"id": "p5-16k", "title": "16 KiB page hosts", "status": "planned"},
+        {"id": "p5-macos", "title": "macOS on Apple silicon (Mach-O)", "status": "planned"},
+        {"id": "p5-woa", "title": "Windows on ARM (PE)", "status": "planned"},
+        {"id": "p5-android", "title": "Android", "status": "planned"}
+      ]
+    },
+    {
+      "id": "p6",
+      "title": "Phase 6: x86-64 static recompiler",
+      "milestones": [
+        {"id": "p6-lifter", "title": "AArch64 to LLVM IR lifter", "status": "planned"},
+        {"id": "p6-jump-tables", "title": "Function discovery and jump tables", "status": "planned"},
+        {"id": "p6-differential", "title": "Differential harness against native AArch64", "status": "planned"},
+        {"id": "p6-user-build", "title": "Build on the user's machine", "status": "planned"},
+        {"id": "p6-playable", "title": "Phase 3 titles playable on x86-64", "status": "planned"}
+      ]
+    },
+    {
+      "id": "p7",
+      "title": "Phase 7: community infrastructure",
+      "milestones": [
+        {"id": "p7-guidelines", "title": "Contributor and agent guidelines", "status": "done"},
+        {"id": "p7-ci", "title": "CI, conventions check, labels, releases", "status": "done"},
+        {"id": "p7-pages", "title": "Progress pages and badges", "status": "done"},
+        {"id": "p7-web", "title": "Web converter (relinker in WebAssembly)", "status": "planned"},
+        {"id": "p7-blocker-map", "title": "Per-title blocker map", "status": "planned"}
+      ]
+    },
+    {
+      "id": "p8",
+      "title": "Phase 8: Switch 2",
+      "milestones": [
+        {"id": "p8-gate", "title": "Owners can produce plain Switch 2 binaries themselves", "status": "blocked"}
+      ]
+    }
+  ]
+}

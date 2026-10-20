@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: MIT
+name: Missing SDK function
+description: An SDK function titles import that the runtime does not provide yet. Used to coordinate implementation work.
+labels: [missing function]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check `anyswitch-relink provided --demangle libnxrt.so` and the open issues first. Do not paste import lists from a title; name only the function(s) this issue is about.
+  - type: input
+    id: symbol
+    attributes:
+      label: Mangled symbol
+      placeholder: _ZN2nn2os15InitializeEventEPNS0_9EventTypeEbNS0_14EventClearModeE
+    validations:
+      required: true
+  - type: input
+    id: demangled
+    attributes:
+      label: Demangled name
+      placeholder: "nn::os::InitializeEvent(nn::os::EventType*, bool, nn::os::EventClearMode)"
+    validations:
+      required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: Runtime module
+      options: [nn_os, libc, cxxabi, new module]
+    validations:
+      required: true
+  - type: input
+    id: demand
+    attributes:
+      label: How many titles need it
+      description: From the aggregate output of `tools/phase0/symbol_inventory.py`, if you ran it. A number only.
+  - type: textarea
+    id: sources
+    attributes:
+      label: Public sources for its behaviour
+      description: switchbrew pages, permissively licensed implementations, public documents (AGENTS.md rule L4). Never SDK material.
+    validations:
+      required: true

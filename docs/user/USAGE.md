@@ -49,4 +49,4 @@ Without `--registry`, missing imports make the host loader refuse to start. With
 
 ## Reporting
 
-Use the "Bring-up report" issue template. Share function names, the audit summary line and `module+offset` locations only. Never attach files from a title.
+Post in the "Title bring-up" category of [Discussions](https://github.com/savvaniss/anyswitch/discussions), one thread per title. Share function names, the audit summary line and `module+offset` locations only. Never attach files from a title.

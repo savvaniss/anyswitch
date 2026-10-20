@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: MIT
+# Posts or updates the progress comment produced by progress-report.yml. Runs
+# from the default branch with write access, and only reads the report
+# artifact; it never checks out pull request code.
+name: Progress comment
+
+on:
+  workflow_run:
+    workflows: [Progress report]
+    types: [completed]
+
+permissions:
+  actions: read
+  pull-requests: write
+
+jobs:
+  comment:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: progress-report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Update the comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          pr=$(cat pr)
+          [[ $pr =~ ^[0-9]+$ ]] || exit 1
+          [ "$(gh pr view "$pr" --json headRefOid --jq .headRefOid)" = "$RUN_SHA" ] || exit 0
+          marker='<!-- anyswitch-progress -->'
+          id=$(gh api "repos/$GH_REPO/issues/$pr/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id" | head -n1)
+          if [ -f report.md ]; then
+            printf '%s\n%s\n' "$marker" "$(cat report.md)" > body.md
+            if [ -n "$id" ]; then
+              gh api -X PATCH "repos/$GH_REPO/issues/comments/$id" -F body=@body.md > /dev/null
+            else
+              gh pr comment "$pr" --body-file body.md
+            fi
+          elif [ -n "$id" ]; then
+            gh api -X DELETE "repos/$GH_REPO/issues/comments/$id"
+          fi

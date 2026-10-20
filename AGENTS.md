@@ -51,7 +51,10 @@ Read these before changing code, in this order:
 | `tools/corpus/` | corpus builder and runner |
 | `tools/phase0/` | measurement tools for users' own titles (aggregate output only) |
 | `tools/bootstrap/` | rootless toolchain download (Zig, qemu-user, AArch64 sysroot) |
+| `tools/site/`, `site/` | GitHub Pages: progress numbers, badges, roadmap map, home and progress pages |
+| `docs/roadmap.json` | milestones and their status; the badges and progress page are generated from it |
 | `docs/dev/debt/` | one file per module listing known gaps |
+| `.github/` | CI, trusted-base conventions check, Pages, progress comments, releases, labels, templates |
 
 ## 5. Build and test
 
@@ -72,7 +75,8 @@ Windows hosts can build and unit-test the host tools natively (MinGW or MSVC); t
 3. **Source the semantics.** Find the public source for the behaviour (rule L4) before coding. If none exists, write a corpus case that documents the assumption, mark it as an assumption in the debt file, and say so in the pull request.
 4. **Follow the recipe** in [docs/dev/RECIPES.md](docs/dev/RECIPES.md) for adding a guest function, an SVC, a corpus case, a patch class or an ABI change.
 5. **Test.** Run `tools/dev/test.sh` and `tools/check_conventions.py`. Paste the summary lines into the pull request.
-6. **Describe.** Use the pull request template. List sources, debt changes and anything you could not verify.
+6. **Update the roadmap.** If the change completes or starts a milestone in `docs/roadmap.json`, change its status in the same pull request. A bot comments the effect on the progress numbers.
+7. **Describe.** Use the pull request template. List sources, debt changes and anything you could not verify.
 
 ## 7. Style for agents
 

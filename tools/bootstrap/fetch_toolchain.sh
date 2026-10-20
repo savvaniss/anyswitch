@@ -44,7 +44,8 @@ PY
   local url sha
   url="${meta%% *}"
   sha="${meta##* }"
-  local tarball="$DL/$(basename "$url")"
+  local tarball
+  tarball="$DL/$(basename "$url")"
   curl -fsSL "$url" -o "$tarball"
   echo "$sha  $tarball" | sha256sum -c -
   rm -rf "$DEST/zig" "$DEST/zig.tmp"

@@ -22,7 +22,17 @@ anyswitch reads only NSO and NRO files from an `exefs` folder the user already h
 
 ## Reporting results from your own titles
 
-Bring-up reports help, but they must not leak game data. Use the "Bring-up report" issue template. Share the first unimplemented function name, the `anyswitch-relink audit` summary line and the crash location as `module+offset`. Do not attach binaries, dumps, symbol lists, screenshots or logs that contain game text.
+Bring-up reports help, but they must not leak game data. Post them in the "Title bring-up" category of [Discussions](https://github.com/savvaniss/anyswitch/discussions), one thread per title; the form asks only for safe fields. Share the first unimplemented function name, the `anyswitch-relink audit` summary line and the crash location as `module+offset`. Do not attach binaries, dumps, symbol lists, screenshots or logs that contain game text.
+
+Missing SDK functions that block titles get an issue from the "Missing SDK function" template, so work can be coordinated.
+
+## Automation you will meet
+
+- **CI** builds and tests on Linux, Windows, macOS and native AArch64, and lints workflows and shell scripts.
+- **Conventions** checks every pull request against AGENTS.md using the checker from `main`, so a pull request cannot change the rules it is judged by.
+- **Progress comment** shows how your pull request changes the SDK export count, open gaps, corpus cases and roadmap.
+- **Labels** are applied by area; `needs rebase` marks conflicts, and conflicted pull requests idle for 14 days get a reminder. Nothing is closed automatically.
+- **Releases** are built and tested from `v*` tags.
 
 ## Pull requests
 

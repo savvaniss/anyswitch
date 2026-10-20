@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: MIT
+# Area labels for pull requests (actions/labeler, see .github/workflows/pr-labels.yml).
+relinker:
+  - changed-files:
+      - any-glob-to-any-file: ['core/common/**', 'core/format/**', 'core/relinker/**']
+
+abi:
+  - changed-files:
+      - any-glob-to-any-file: 'core/abi/**'
+
+runtime:
+  - changed-files:
+      - any-glob-to-any-file: ['runtime/src/rt/**', 'runtime/include/**', 'runtime/CMakeLists.txt', 'runtime/nxrt.map']
+
+nn_os:
+  - changed-files:
+      - any-glob-to-any-file: 'runtime/src/nn_os/**'
+
+libc:
+  - changed-files:
+      - any-glob-to-any-file: 'runtime/src/libc/**'
+
+cxxabi:
+  - changed-files:
+      - any-glob-to-any-file: 'runtime/src/cxxabi/**'
+
+corpus:
+  - changed-files:
+      - any-glob-to-any-file: ['tests/corpus/**', 'tools/corpus/**']
+
+site:
+  - changed-files:
+      - any-glob-to-any-file: ['site/**', 'tools/site/**']
+
+build:
+  - changed-files:
+      - any-glob-to-any-file: ['**/CMakeLists.txt', 'cmake/**', 'tools/bootstrap/**', 'tools/dev/**', '3rdparty/**']
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: ['**/*.md', 'docs/**']
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: '.github/**'

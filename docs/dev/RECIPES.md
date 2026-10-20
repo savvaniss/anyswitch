@@ -43,6 +43,18 @@ Step-by-step instructions for the tasks that come up most. Each ends with the sa
 2. Update both sides and the "Relinker/runtime contract" section of ARCHITECTURE.md.
 3. `tools/check_conventions.py --base origin/main` fails if the header changed without a version bump.
 
+## Complete a roadmap milestone
+
+1. Change the milestone's `status` in `docs/roadmap.json` (`done`, `in_progress`, `planned`, `blocked`) in the pull request that does the work.
+2. Preview the effect: `python3 -I tools/site/progress.py` prints the numbers; `python3 -I tools/site/build_site.py build/site` builds the whole site.
+3. The progress comment on the pull request shows the change; the Pages site and badges update after the merge.
+
+## Cut a release
+
+1. Make sure `main` is green.
+2. `git tag v0.X.Y && git push origin v0.X.Y` (a `-rc.N` suffix makes a pre-release).
+3. The Release workflow builds and tests the relinker for four platforms and the runtime, then publishes them with checksums.
+
 ## Measure your own titles (Phase 0)
 
 These read files you have; they print aggregate numbers only. Do not post per-title output.

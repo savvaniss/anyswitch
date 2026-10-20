@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: MIT
+# Pull requests that conflict with main and see no activity for 14 days get
+# a reminder. Nothing is closed automatically, and issues are never touched.
+name: Stale conflicts
+
+on:
+  schedule:
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v11
+        with:
+          only-pr-labels: needs rebase
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+          days-before-pr-stale: 14
+          days-before-pr-close: -1
+          stale-pr-label: stale
+          stale-pr-message: >-
+            This pull request has conflicted with `main` with no activity for 14 days. Rebase it on the
+            current `main` when you can so it can be reviewed; it will not be closed automatically.
+          remove-pr-stale-when-updated: true
+          exempt-draft-pr: true
+          operations-per-run: 100

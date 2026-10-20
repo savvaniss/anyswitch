@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: MIT
+# Applies area labels from .github/labeler.yml. actions/labeler reads only the
+# list of changed files and never runs pull request code.
+name: PR labels
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/labeler@v7
+        with:
+          sync-labels: true
