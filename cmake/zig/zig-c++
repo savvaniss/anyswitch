@@ -1,0 +1,4 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# Compiler wrapper so CMake can use "zig c++" as an ordinary compiler.
+exec "${ZIG:-zig}" c++ -target "${ZIG_TARGET:-aarch64-linux-gnu.2.28}" "$@"

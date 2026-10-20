@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: MIT
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  conventions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check repository conventions (AGENTS.md)
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          if [ -n "$base" ]; then
+            python3 -I tools/check_conventions.py --base "$base"
+          else
+            python3 -I tools/check_conventions.py
+          fi
+
+  host:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build/host -DCMAKE_BUILD_TYPE=Release -DANYSWITCH_WERROR=ON
+      - name: Build
+        run: cmake --build build/host --config Release
+      - name: Unit tests
+        run: ctest --test-dir build/host -C Release --output-on-failure
+
+  corpus-x86_64:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install qemu-user and an AArch64 sysroot
+        run: sudo apt-get update && sudo apt-get install -y qemu-user-static libc6-arm64-cross ninja-build
+      - name: Fetch Zig
+        run: |
+          export QEMU_AARCH64="$(command -v qemu-aarch64-static)"
+          export AARCH64_SYSROOT=/usr/aarch64-linux-gnu
+          tools/bootstrap/fetch_toolchain.sh
+      - name: Build
+        run: tools/dev/build.sh
+      - name: Unit tests and corpus under qemu
+        run: tools/dev/test.sh
+
+  corpus-aarch64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: Fetch Zig
+        run: tools/bootstrap/fetch_toolchain.sh
+      - name: Build
+        run: tools/dev/build.sh
+      - name: Unit tests and corpus, native
+        run: tools/dev/test.sh

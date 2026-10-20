@@ -1,0 +1,36 @@
+# build trees
+/build*/
+/out/
+/.toolchain/
+CMakeUserPresets.json
+compile_commands.json
+
+# generated test corpus and relinker output
+/tests/corpus/out/
+/tests/integration/out/
+
+# never commit game data, dumps or key material (see AGENTS.md rule L1/L2)
+*.nso
+*.nro
+*.nrr
+*.npdm
+*.nsp
+*.nsz
+*.xci
+*.xcz
+*.nca
+*.ncz
+*.keys
+*.tik
+exefs/
+romfs/
+private/
+
+# editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc

@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+# Issues must use a template; both templates restate the contribution rules
+# from AGENTS.md (no game files, no keys, no acquisition questions).
+blank_issues_enabled: false

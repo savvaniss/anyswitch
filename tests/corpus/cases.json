@@ -1,0 +1,90 @@
+{
+  "_comment": "Synthetic corpus cases. Each module lists its sources (tests/corpus/src) and output format. Expectations are regular expressions; stdout patterns must appear in order. See docs/dev/TESTING.md.",
+  "program_id": "01004e5841000000",
+  "cases": [
+    {
+      "name": "hello",
+      "modules": { "main": { "sources": ["hello.cpp"], "format": "nro" } },
+      "args": ["alpha", "beta"],
+      "exit": 0,
+      "stdout": [
+        "^static init ran$",
+        "^hello from guest: 42$",
+        "^argc=3 argv\\[1\\]=alpha$",
+        "^lazy-43 len=7$",
+        "^heap ok$",
+        "^nnMain done$",
+        "^static fini ran$"
+      ]
+    },
+    {
+      "name": "sysregs",
+      "modules": { "main": { "sources": ["sysregs.cpp"], "format": "nso" } },
+      "exit": 0,
+      "stdout": [
+        "^tlr ok$",
+        "^tpidr ok$",
+        "^cntfrq 19200000$",
+        "^tick ok$",
+        "^tick frequency 19200000$",
+        "^exclusive ok$"
+      ]
+    },
+    {
+      "name": "svc",
+      "modules": { "main": { "sources": ["svc.cpp"], "format": "nso" } },
+      "exit": 0,
+      "stdout": [
+        "^svc output result 0$",
+        "^svc tick ok$",
+        "^program id 01004e5841000000 rc 0$",
+        "^bad info rc 0xf001$",
+        "^flags preserved$",
+        "^about to exit$"
+      ],
+      "stdout_absent": ["should not print"],
+      "stderr": ["\\[guest\\] hello via svc"]
+    },
+    {
+      "name": "threads",
+      "modules": { "main": { "sources": ["threads.cpp"], "format": "nso" } },
+      "exit": 0,
+      "stdout": [
+        "^locked counter 80000$",
+        "^atomic counter 80000$",
+        "^threads distinct ok$"
+      ]
+    },
+    {
+      "name": "missing",
+      "modules": { "main": { "sources": ["missing.cpp"], "format": "nso" } },
+      "exit": 86,
+      "stdout": ["^before missing call$"],
+      "stdout_absent": ["should not print"],
+      "stderr": ["unimplemented guest function nn::fs::MountRom\\(char const\\*, void\\*, unsigned long\\)"]
+    },
+    {
+      "name": "abi_surface",
+      "modules": { "main": { "sources": ["abi_surface.cpp"], "format": "nso" } },
+      "exit": 0,
+      "stdout": [
+        "^surface 90 functions 4 data, 0 null$",
+        "^numbers -42/255/7$",
+        "^sorted 1 3 5 9$",
+        "^strings linked 4 ed$",
+        "^aligned ok$",
+        "^stack guard set$"
+      ],
+      "stderr": ["stderr ok"]
+    },
+    {
+      "name": "multi",
+      "modules": {
+        "main": { "sources": ["multi_main.cpp"], "format": "nso" },
+        "subsdk0": { "sources": ["multi_subsdk.cpp"], "format": "nso" }
+      },
+      "exit": 0,
+      "stdout": ["^subsdk0 init$", "^main init$", "^subsdk_add=5$"]
+    }
+  ]
+}

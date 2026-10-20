@@ -1,0 +1,11 @@
+/* SPDX-License-Identifier: MIT
+ * Only guest exports ("nx$" prefix) and the runtime entry are visible to the
+ * dynamic linker; everything else, including the statically linked C++
+ * library, stays local so it cannot interpose other host libraries. */
+{
+  global:
+    nx$*;
+    __nxrt_*;
+  local:
+    *;
+};
